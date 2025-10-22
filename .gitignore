@@ -110,3 +110,7 @@ dmypy.json
 
 # Streamlit
 secrets.toml
+
+# Large model files
+artifacts/
+*.pkl
