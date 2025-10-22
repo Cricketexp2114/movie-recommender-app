@@ -57,13 +57,13 @@ st.header('🎬 Movie Recommender System')
 # ------------------- Load Files -------------------
 
 # Load movie_dict.pkl locally (under 25 MB)
-movies_dict = pickle.load(open('artifacts/movie_dict.pkl', 'rb'))
+movies_dict = pickle.load(open('movie_dict.pkl', 'rb'))
 movies = pd.DataFrame(movies_dict)
 
 # Google Drive file ID for similarity
 # Google Drive file ID for similarity.pkl
 file_id = "1c2RzpfjydBFxudkEjwHW1auW2JCHhQVV"
-output_file = "artifacts/similarity.pkl"
+output_file = "similarity.pkl"
 
 # Download using gdown if not already downloaded
 if not os.path.exists(output_file):
