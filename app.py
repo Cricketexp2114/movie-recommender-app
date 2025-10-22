@@ -57,7 +57,7 @@ st.header('🎬 Movie Recommender System')
 # ------------------- Load Files -------------------
 
 # Load movie_dict.pkl locally (under 25 MB)
-movies_dict = pickle.load(open('movie_dict.pkl', 'rb'))
+movies_dict = pickle.load(open('artifacts/movie_dict.pkl', 'rb'))
 movies = pd.DataFrame(movies_dict)
 
 # Google Drive file ID for similarity
