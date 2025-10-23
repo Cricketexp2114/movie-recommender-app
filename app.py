@@ -10,17 +10,23 @@ import os
 
 def fetch_poster(movie_id):
     """Fetches the movie poster URL from TMDB API."""
-    api_key = st.secrets["tmdb_api_key"]
+    # Safely get API key from secrets
+    api_key = st.secrets.get("general", {}).get("tmdb_api_key")
+    if not api_key:
+        st.warning("TMDB API key not found in secrets. Poster will not load.")
+        return "https://placehold.co/500x750/333/FFFFFF?text=No+Poster"
+
     url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&language=en-US"
     try:
-        data = requests.get(url)
-        data.raise_for_status()
-        data = data.json()
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
         poster_path = data.get('poster_path')
         if poster_path:
             return "https://image.tmdb.org/t/p/w500/" + poster_path
     except requests.exceptions.RequestException as e:
         st.error(f"Error fetching poster: {e}")
+
     return "https://placehold.co/500x750/333/FFFFFF?text=No+Poster"
 
 
@@ -57,11 +63,14 @@ st.header('🎬 Movie Recommender System')
 # ------------------- Load Files -------------------
 
 # Load movie_dict.pkl locally (under 25 MB)
-movies_dict = pickle.load(open('artifacts/movie_dict.pkl', 'rb'))
-movies = pd.DataFrame(movies_dict)
+try:
+    movies_dict = pickle.load(open('artifacts/movie_dict.pkl', 'rb'))
+    movies = pd.DataFrame(movies_dict)
+except FileNotFoundError:
+    st.error("Movie dictionary not found! Make sure 'artifacts/movie_dict.pkl' exists.")
+    st.stop()
 
 # Google Drive file ID for similarity
-# Google Drive file ID for similarity.pkl
 file_id = "1c2RzpfjydBFxudkEjwHW1auW2JCHhQVV"
 output_file = "similarity.pkl"
 
@@ -71,8 +80,12 @@ if not os.path.exists(output_file):
         gdown.download(f"https://drive.google.com/uc?id={file_id}", output_file, quiet=False)
 
 # Load similarity.pkl
-with open(output_file, "rb") as f:
-    similarity = pickle.load(f)
+try:
+    with open(output_file, "rb") as f:
+        similarity = pickle.load(f)
+except FileNotFoundError:
+    st.error("Similarity model not found! Check your Google Drive link.")
+    st.stop()
 
 # ------------------- Movie Selection -------------------
 
